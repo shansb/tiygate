@@ -45,6 +45,7 @@ mod tests {
     fn test_routing_table_per_route_strategy() {
         let mk_target = || RoutingTarget {
             provider_id: "openai".to_string(),
+            vendor: None,
             model_id: "gpt-4o".to_string(),
             api_base: "https://api.openai.com/v1".to_string(),
             api_key: "sk-test".to_string(),
@@ -105,6 +106,7 @@ mod tests {
     fn test_routing_target_effective_key() {
         let target = RoutingTarget {
             provider_id: "test".to_string(),
+            vendor: None,
             model_id: "test-model".to_string(),
             api_base: "https://test.api".to_string(),
             api_key: "original-key".to_string(),
@@ -426,6 +428,7 @@ mod tests {
         let policy = DefaultFallbackPolicy::with_defaults();
         let target = RoutingTarget {
             provider_id: "test".to_string(),
+            vendor: None,
             model_id: "m".to_string(),
             api_base: "https://test".to_string(),
             api_key: "k".to_string(),
@@ -452,6 +455,7 @@ mod tests {
         let policy = DefaultFallbackPolicy::with_defaults();
         let target = RoutingTarget {
             provider_id: "test".to_string(),
+            vendor: None,
             model_id: "m".to_string(),
             api_base: "https://test".to_string(),
             api_key: "k".to_string(),
@@ -525,6 +529,7 @@ mod tests {
         let targets = vec![
             RoutingTarget {
                 provider_id: "a".to_string(),
+                vendor: None,
                 model_id: "m".to_string(),
                 api_base: "https://a".to_string(),
                 api_key: "k".to_string(),
@@ -537,6 +542,7 @@ mod tests {
             },
             RoutingTarget {
                 provider_id: "b".to_string(),
+                vendor: None,
                 model_id: "m".to_string(),
                 api_base: "https://b".to_string(),
                 api_key: "k".to_string(),
@@ -559,6 +565,7 @@ mod tests {
         let targets = vec![
             RoutingTarget {
                 provider_id: "low".to_string(),
+                vendor: None,
                 model_id: "m".to_string(),
                 api_base: "https://low".to_string(),
                 api_key: "k".to_string(),
@@ -571,6 +578,7 @@ mod tests {
             },
             RoutingTarget {
                 provider_id: "high".to_string(),
+                vendor: None,
                 model_id: "m".to_string(),
                 api_base: "https://high".to_string(),
                 api_key: "k".to_string(),
@@ -598,6 +606,7 @@ mod tests {
         let targets = vec![
             RoutingTarget {
                 provider_id: "healthy".to_string(),
+                vendor: None,
                 model_id: "m".to_string(),
                 api_base: "https://healthy".to_string(),
                 api_key: "k".to_string(),
@@ -610,6 +619,7 @@ mod tests {
             },
             RoutingTarget {
                 provider_id: "broken".to_string(),
+                vendor: None,
                 model_id: "m".to_string(),
                 api_base: "https://broken".to_string(),
                 api_key: "k".to_string(),
@@ -637,6 +647,7 @@ mod tests {
             DefaultFallbackPolicy::new(3, Duration::from_secs(120), RetryPolicy::with_defaults());
         let target = RoutingTarget {
             provider_id: "test".to_string(),
+            vendor: None,
             model_id: "m".to_string(),
             api_base: "https://test".to_string(),
             api_key: "k".to_string(),
@@ -676,6 +687,7 @@ mod tests {
         let targets = vec![
             RoutingTarget {
                 provider_id: "a".to_string(),
+                vendor: None,
                 model_id: "model".to_string(),
                 api_base: "https://a".to_string(),
                 api_key: "k".to_string(),
@@ -688,6 +700,7 @@ mod tests {
             },
             RoutingTarget {
                 provider_id: "b".to_string(),
+                vendor: None,
                 model_id: "model".to_string(),
                 api_base: "https://b".to_string(),
                 api_key: "k".to_string(),
@@ -700,6 +713,7 @@ mod tests {
             },
             RoutingTarget {
                 provider_id: "c".to_string(),
+                vendor: None,
                 model_id: "model".to_string(),
                 api_base: "https://c".to_string(),
                 api_key: "k".to_string(),
@@ -743,6 +757,7 @@ mod tests {
             DefaultFallbackPolicy::new(2, Duration::from_secs(60), RetryPolicy::with_defaults());
         let target = RoutingTarget {
             provider_id: "test".to_string(),
+            vendor: None,
             model_id: "m".to_string(),
             api_base: "https://test".to_string(),
             api_key: "k".to_string(),
@@ -776,6 +791,7 @@ mod tests {
         let policy = DefaultFallbackPolicy::with_defaults();
         let target = RoutingTarget {
             provider_id: "openai".to_string(),
+            vendor: None,
             model_id: "gpt-4o".to_string(),
             api_base: "https://api.openai.com/v1".to_string(),
             api_key: "sk".to_string(),

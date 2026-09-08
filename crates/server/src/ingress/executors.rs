@@ -576,7 +576,13 @@ pub(super) async fn execute_upstream(
         &mut upstream_headers,
         &state.tunables().header_policy,
     );
-    apply_provider_auth(target, &mut upstream_headers, &state.oauth_manager, caller_key_id).await?;
+    apply_provider_auth(
+        target,
+        &mut upstream_headers,
+        &state.oauth_manager,
+        caller_key_id,
+    )
+    .await?;
     if openai_codex_profile {
         codex_oauth::apply_request_headers(
             &mut upstream_headers,
@@ -1168,7 +1174,13 @@ pub(super) async fn execute_messages_upstream(
         &mut upstream_headers,
         &state.tunables().header_policy,
     );
-    apply_provider_auth(target, &mut upstream_headers, &state.oauth_manager, caller_key_id).await?;
+    apply_provider_auth(
+        target,
+        &mut upstream_headers,
+        &state.oauth_manager,
+        caller_key_id,
+    )
+    .await?;
     if openai_codex_profile {
         codex_oauth::apply_request_headers(
             &mut upstream_headers,
@@ -1767,7 +1779,13 @@ pub(super) async fn execute_embeddings_upstream(
         &mut upstream_headers,
         &state.tunables().header_policy,
     );
-    apply_provider_auth(target, &mut upstream_headers, &state.oauth_manager, caller_key_id).await?;
+    apply_provider_auth(
+        target,
+        &mut upstream_headers,
+        &state.oauth_manager,
+        caller_key_id,
+    )
+    .await?;
 
     let egress_body_capture = serde_json::to_string(&upstream_body).ok();
     let req_id_capture = request_id.to_string();
@@ -1998,7 +2016,13 @@ pub(super) async fn execute_responses_upstream(
         &mut upstream_headers,
         &state.tunables().header_policy,
     );
-    apply_provider_auth(target, &mut upstream_headers, &state.oauth_manager, caller_key_id).await?;
+    apply_provider_auth(
+        target,
+        &mut upstream_headers,
+        &state.oauth_manager,
+        caller_key_id,
+    )
+    .await?;
     if openai_codex_profile {
         codex_oauth::apply_request_headers(
             &mut upstream_headers,
@@ -2830,7 +2854,13 @@ pub(super) async fn execute_gemini_upstream(
         &mut upstream_headers,
         &state.tunables().header_policy,
     );
-    apply_provider_auth(target, &mut upstream_headers, &state.oauth_manager, caller_key_id).await?;
+    apply_provider_auth(
+        target,
+        &mut upstream_headers,
+        &state.oauth_manager,
+        caller_key_id,
+    )
+    .await?;
     if openai_codex_profile {
         codex_oauth::apply_request_headers(
             &mut upstream_headers,
@@ -3312,7 +3342,13 @@ pub(super) async fn execute_images_generations_upstream(
         &mut upstream_headers,
         &state.tunables().header_policy,
     );
-    apply_provider_auth(target, &mut upstream_headers, &state.oauth_manager, caller_key_id).await?;
+    apply_provider_auth(
+        target,
+        &mut upstream_headers,
+        &state.oauth_manager,
+        caller_key_id,
+    )
+    .await?;
 
     let egress_body_capture = if pass_through_verbatim {
         raw_passthrough_body.map(|s| s.to_string())
@@ -3686,7 +3722,13 @@ pub(super) async fn execute_images_edits_upstream(
         &mut upstream_headers,
         &state.tunables().header_policy,
     );
-    apply_provider_auth(target, &mut upstream_headers, &state.oauth_manager, caller_key_id).await?;
+    apply_provider_auth(
+        target,
+        &mut upstream_headers,
+        &state.oauth_manager,
+        caller_key_id,
+    )
+    .await?;
 
     // TODO(prompt-cache): multipart re-encoding is not implemented in
     // v1, so prompt_cache_key cannot be injected for edits requests.

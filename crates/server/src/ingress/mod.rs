@@ -823,7 +823,16 @@ pub async fn apply_provider_auth(
     // Return immediately on success; fall through to the static
     // key path only when the target is not OAuth-mode.
     match oauth_manager.apply(target, upstream_headers).await {
-        Ok(true) => return Ok(()),
+        Ok(true) => {
+            // OAuth succeeded — still inject provider-specific extra
+            // headers (e.g. x-opencode-session) so the trait contract
+            // is consistent across auth paths.
+            let lookup_key = target.vendor.as_deref().unwrap_or(&target.provider_id);
+            if let Some(provider) = tiygate_core::provider::find_provider(lookup_key) {
+                inject_provider_extra_headers(&*provider, caller_key_id, upstream_headers);
+            }
+            return Ok(());
+        }
         Ok(false) => { /* not OAuth — fall through to static key */ }
         Err(e) => {
             return Err(AppError::new(

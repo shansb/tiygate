@@ -813,7 +813,8 @@ async fn test_multi_target_fallback_5xx_transfers() {
         "gpt-4o".to_string(),
         vec![
             tiygate_core::RoutingTarget {
-            vendor: None,                 provider_id: "primary".to_string(),
+                vendor: None,
+                provider_id: "primary".to_string(),
                 model_id: "gpt-4o".to_string(),
                 api_base: primary.uri(),
                 api_key: "sk-1".to_string(),
@@ -829,7 +830,8 @@ async fn test_multi_target_fallback_5xx_transfers() {
                 oauth: None,
             },
             tiygate_core::RoutingTarget {
-            vendor: None,                 provider_id: "secondary".to_string(),
+                vendor: None,
+                provider_id: "secondary".to_string(),
                 model_id: "gpt-4o".to_string(),
                 api_base: secondary.uri(),
                 api_key: "sk-2".to_string(),
