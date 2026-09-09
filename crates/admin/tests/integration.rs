@@ -154,6 +154,44 @@ async fn acceptance_1_admin_crud_propagates_to_routing_table() {
 }
 
 #[tokio::test]
+async fn openai_api_key_custom_base_derives_models_endpoint_when_omitted() {
+    let (router, store, _pool) = boot_no_auth().await;
+    let resp = router
+        .clone()
+        .oneshot(json_request(
+            "POST",
+            "/admin/v1/providers",
+            json!({
+                "id": "custom-openai",
+                "name": "Custom OpenAI",
+                "vendor": "openai",
+                "api_base": "https://your-proxy.com/v1",
+                "api_key": "sk-custom",
+                "auth_mode": "api_key",
+            }),
+        ))
+        .await
+        .expect("response");
+    assert_eq!(resp.status(), StatusCode::CREATED);
+
+    let body = axum::body::to_bytes(resp.into_body(), 8192)
+        .await
+        .expect("body");
+    let view: serde_json::Value = serde_json::from_slice(&body).expect("provider JSON");
+    assert_eq!(
+        view["models_endpoint"],
+        json!("https://your-proxy.com/v1/models")
+    );
+
+    let provider = store
+        .get_provider("custom-openai")
+        .await
+        .expect("get provider")
+        .expect("provider exists");
+    assert_eq!(provider.models_endpoint, "https://your-proxy.com/v1/models");
+}
+
+#[tokio::test]
 async fn provider_delete_impact_counts_linked_routes_and_empty_routes() {
     let (router, _store, _pool) = boot_no_auth().await;
     create_test_provider(&router, "prov-a").await;
@@ -679,6 +717,45 @@ async fn acceptance_3_stats_by_provider_endpoint() {
     assert!(!buckets.is_empty());
     assert_eq!(buckets[0]["bucket"], "openai");
     assert_eq!(buckets[0]["cost"], 42_000);
+}
+
+#[tokio::test]
+async fn token_dashboard_endpoint_returns_activity_and_summary_together() {
+    let (router, _store, pool) = boot_no_auth().await;
+    let now = chrono::Utc::now();
+    sqlx::query(
+        "INSERT INTO request_logs \
+            (request_id, ts, virtual_model, ingress_protocol, status, total_tokens) \
+         VALUES ($1, $2, 'gpt-4o', 'openai/chat-completions/v1', 'ok', $3)",
+    )
+    .bind("token-dashboard-request")
+    .bind(now.to_rfc3339())
+    .bind(1_400_000_000_i64)
+    .execute(pool.any())
+    .await
+    .expect("insert request log");
+    tiygate_store::token_stats::aggregate_once(pool.as_ref(), 30)
+        .await
+        .expect("aggregate token stats");
+
+    let resp = router
+        .oneshot(
+            Request::builder()
+                .method("GET")
+                .uri("/admin/v1/stats/token-dashboard?days=365")
+                .body(Body::empty())
+                .expect("request"),
+        )
+        .await
+        .expect("response");
+    assert_eq!(resp.status(), StatusCode::OK);
+    let bytes = axum::body::to_bytes(resp.into_body(), 8192)
+        .await
+        .expect("response body");
+    let body: serde_json::Value = serde_json::from_slice(&bytes).expect("response JSON");
+    assert_eq!(body["days"][0]["total_tokens"], 1_400_000_000_i64);
+    assert_eq!(body["summary"]["lifetime_tokens"], 1_400_000_000_i64);
+    assert_eq!(body["summary"]["peak_day_tokens"], 1_400_000_000_i64);
 }
 
 // ---- Acceptance #4: config and log are separate tables ----
